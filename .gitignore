@@ -1,0 +1,19 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+.venv-1/
+venv/
+
+# Environment variables and API keys
+.env
+.env.*
+
+# Local task data
+tasks.json
+
+# IDE settings
+.vscode/
+.idea/

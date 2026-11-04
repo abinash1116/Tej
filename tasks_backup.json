@@ -1,0 +1,128 @@
+[
+    {
+        "id": 1,
+        "name": "study dbms",
+        "description": "study the models of dbms like er models, relational model, network model, object oriented model and so on",
+        "due_date": "2083/07/01"
+    },
+    {
+        "id": 3,
+        "name": "study c",
+        "description": "c is the base language",
+        "due_date": "2081/05/16"
+    },
+    {
+        "id": 4,
+        "name": "learn ai",
+        "description": "ai is very useful nowadays",
+        "due_date": "2083/01/11"
+    },
+    {
+        "name": "learn dsa",
+        "description": "dsa is the fundamental of programming",
+        "due_date": "2083/02/11",
+        "id": 5
+    },
+    {
+        "name": "learn java",
+        "description": "java is another programming language",
+        "due_date": "2083/05/11",
+        "id": 6
+    },
+    {
+        "name": "learn R",
+        "description": "R is the language that is used in data analysis",
+        "due_date": "55",
+        "id": 7
+    },
+    {
+        "name": "learn ai",
+        "description": "ai is very useful nowadays",
+        "due_date": "55",
+        "id": 8
+    },
+    {
+        "name": "learn random stuffs",
+        "description": "this is just the test",
+        "due_date": "33",
+        "id": 9
+    },
+    {
+        "name": "learn database",
+        "description": "blablabla",
+        "due_date": "99",
+        "id": 11
+    },
+    {
+        "name": "Learn Anthropic ClaUde",
+        "description": "claude is also a llm",
+        "due_date": "2075/05/77",
+        "id": 12
+    },
+    {
+        "name": "",
+        "description": "j payo tehe",
+        "due_date": "",
+        "id": 13
+    },
+    {
+        "name": "learning some randoms stuffs",
+        "description": "haha",
+        "due_date": "ajsdhfpoias",
+        "id": 14
+    },
+    {
+        "name": "Learn snake",
+        "description": "python is a high level programming language",
+        "due_date": "66",
+        "id": 18
+    },
+    {
+        "name": "Learn snake",
+        "description": "python is a crazyy language",
+        "due_date": "87",
+        "id": 19
+    },
+    {
+        "name": "mobile",
+        "description": "mobile is mobile",
+        "due_date": "77",
+        "id": 20
+    },
+    {
+        "name": "laptop",
+        "description": "laptop is laptop",
+        "due_date": "83/02/23",
+        "id": 21
+    },
+    {
+        "name": "keyboard",
+        "description": "keyboard is keyboard",
+        "due_date": "2083/05/22",
+        "id": 22
+    },
+    {
+        "name": "dairy",
+        "description": "dairy",
+        "due_date": "2082/02/22",
+        "id": 23
+    },
+    {
+        "name": "learn pythn",
+        "description": "python is a crazy subject",
+        "due_date": "2083/02/17",
+        "id": 24
+    },
+    {
+        "name": "learn trophy",
+        "description": "trophy is crazy",
+        "due_date": "2083/12/32",
+        "id": 25
+    },
+    {
+        "name": "task 1",
+        "description": "this is testing task manager",
+        "due_date": "2083-02-21",
+        "id": 26
+    }
+]
