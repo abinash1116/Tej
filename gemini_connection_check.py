@@ -13,7 +13,7 @@ if not api_key:
 client = genai.Client(api_key=api_key)
 
 response = client.models.generate_content(
-    model = "gemini-flash-latest",
+    model = "models/gemini-3.5-flash",
     contents = "Hello Gemini introduce yourself briefly."
 )
 
