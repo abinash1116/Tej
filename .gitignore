@@ -20,4 +20,6 @@ tasks.json
 
 conversation_history.json
 env.text
-.venv-tej/
+.venv-tej/  
+
+.gitignore
