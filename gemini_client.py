@@ -1,6 +1,7 @@
 from google import genai
 import os
 from dotenv import load_dotenv
+from google.genai import errors
 
 load_dotenv()
 
@@ -25,13 +26,29 @@ def generate_response(prompt, history = None):
             "parts": [{"text": message["content"]}]
         })
         
-        contents.append({
+    contents.append({
             "role": "user",
             "parts": [{"text": prompt}]
-        })
-    response = client.models.generate_content(
-        model = "gemini-3.5-flash-lite",
-        contents = contents
+    })
+    try:
+        response = client.models.generate_content(
+            model="gemini-3.5-flash-lite",
+            contents=contents
     )
+        return response.text
     
-    return response.text
+    except errors.ClientError as e:
+        print(f"Client error: {e}")
+        return None
+
+    except errors.ServerError as e:
+        print(f"Server error: {e}")
+        return None
+
+    except errors.APIError as e:
+        print(f"API error: {e}")
+        return None
+
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        return None

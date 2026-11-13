@@ -17,3 +17,7 @@ tasks.json
 # IDE settings
 .vscode/
 .idea/
+
+conversation_history.json
+env.text
+.venv-tej/

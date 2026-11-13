@@ -16,10 +16,14 @@ def start_assistant():
             break
         
         response = generate_response(user_input, history)
-        add_message(history, "user", user_input)
-        add_message(history, "model", response)
-        print("\nTej: ",response)
-        print()
+        if response is None:
+            print("Sorry, I couldn't generate a response. Please try again.")
+            continue
+        else:
+            add_message(history, "user", user_input)
+            add_message(history, "model", response)
+            print("\nTej: ",response)
+            print()
         
 if __name__ == "__main__":
     start_assistant()
