@@ -119,6 +119,35 @@ def assign_task_ids(tasks):
         used_ids.add(next_id)
         next_id += 1
 
+def add_task_from_assistant(name, description = None, due_date= None):
+    if not name or not name.strip():
+        print("Task name cannot be empty. Please provide a valid task name.")
+        return
+    
+    name = name.strip()
+    
+    if description is not None:
+        description = description.strip() or None
+    
+    if due_date is not None:
+        due_date = due_date.strip() or None
+
+    new_task = {
+        "name": name,
+        "descripition": description,
+        "due_date": due_date
+    }
+    
+    tasks = load_tasks()
+    assign_task_ids(tasks)
+    
+    task_id = max((task["id"] for task in tasks), default = 0) +1
+    new_task["id"] = task_id
+    tasks.append(new_task)
+    
+    save_tasks(tasks)
+    
+    return new_task
 
 def add_task():
     while True:
@@ -161,7 +190,16 @@ def add_task():
     save_tasks(tasks)  #write python data to a json file with indentation for readability
     print(f"Task added with ID: {task_id}")
     
+def view_task_from_assistant():
+    tasks = load_tasks()
+    if not tasks:
+        print("No tasks found.")
+        return
+    else:
+        return tasks
     
+        
+   
 def view_task():
     tasks = load_tasks()
 
@@ -174,6 +212,20 @@ def view_task():
             print(f"Task name: {task['name']}")
     except KeyError as e:
         print(f"Error: Missing key in task data - {e}")
+
+def search_task_from_assistant(name):
+    tasks = load_tasks()
+    
+    if not load_tasks:
+        print("No tasks found.")
+        return
+    name = name.strip().casefold()
+    
+    matches = [
+        task for task in tasks
+        if name in task["name"].casefold() == name
+    ]
+    return matches
 
 def search():
     tasks = load_tasks()
@@ -202,6 +254,20 @@ def search():
         f"Description: {selected_task['description']}\n"
         f"Due Date: {selected_task['due_date']}"
     )
+
+def delete_task_from_assistant(task_id):
+    tasks = load_tasks()
+
+    task = get_task_by_id(tasks, task_id)
+
+    if task is None:
+        return None
+
+    if remove_task(tasks, task):
+        save_tasks(tasks)
+        return task
+
+    return None
 
 def delete():
     tasks = load_tasks()
@@ -246,6 +312,36 @@ def delete():
         print(f"Task deleted: ID {task_to_delete.get('id')} - {task_to_delete['name']}")
     else:
         print("Task not found in the list. Deletion failed.")
+
+def update_task_from_assistant(task_id, field, new_value):
+    tasks = load_tasks()
+
+    task = get_task_by_id(tasks, task_id)
+
+    if task is None:
+        return None
+
+    allowed_fields = ("name", "description", "due_date")
+
+    if field not in allowed_fields:
+        raise ValueError("Invalid field.")
+
+    if not isinstance(new_value, str) or not new_value.strip():
+        raise ValueError("New value cannot be empty.")
+
+    new_value = new_value.strip()
+
+    if field == "due_date":
+        new_value = normalize_due_date(new_value)
+
+    if str(task.get(field, "")).strip().casefold() == new_value.casefold():
+        raise ValueError("New value is the same as the existing value.")
+
+    task.update({field: new_value})
+
+    save_tasks(tasks)
+
+    return task
 
 def update():
     tasks = load_tasks()
