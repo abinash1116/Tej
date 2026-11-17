@@ -393,5 +393,7 @@ def update():
         update_task(tasks, task_to_update, field, new_value)
         break
 
-    save_tasks(tasks)
+    save_tasks(tasks)   
     print(f"Task {field_label} updated.")
+
+#error: name same huda matra search gari rako xa
