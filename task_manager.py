@@ -134,7 +134,7 @@ def add_task_from_assistant(name, description = None, due_date= None):
 
     new_task = {
         "name": name,
-        "descripition": description,
+        "description": description,
         "due_date": due_date
     }
     
@@ -396,4 +396,3 @@ def update():
     save_tasks(tasks)   
     print(f"Task {field_label} updated.")
 
-#error: name same huda matra search gari rako xa
