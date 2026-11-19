@@ -270,9 +270,9 @@ def delete_task_from_assistant(task_id):
     cursor = connection.cursor()
     
     cursor.execute("""
-    DELETE FROM task WHERE task_id = ?,               
+    DELETE FROM tasks WHERE task_id = ?,               
     """, (task_id,))
-    deleted = cursor.rowcount()
+    deleted = cursor.rowcount
     
     connection.commit()
     connection.close()
@@ -324,85 +324,74 @@ def delete_task_from_assistant(task_id):
 #         print("Task not found in the list. Deletion failed.")
 
 def update_task_from_assistant(task_id, field, new_value):
-    tasks = load_tasks()
-
-    task = get_task_by_id(tasks, task_id)
-
-    if task is None:
-        return None
-
-    allowed_fields = ("name", "description", "due_date")
-
+    connection = create_connection()
+    cursor = connection.cursor()
+    allowed_fields = ["name", "description", "due_date"]
     if field not in allowed_fields:
-        raise ValueError("Invalid field.")
-
-    if not isinstance(new_value, str) or not new_value.strip():
-        raise ValueError("New value cannot be empty.")
-
-    new_value = new_value.strip()
-
-    if field == "due_date":
-        new_value = normalize_due_date(new_value)
-
-    if str(task.get(field, "")).strip().casefold() == new_value.casefold():
-        raise ValueError("New value is the same as the existing value.")
-
-    task.update({field: new_value})
-
-    save_tasks(tasks)
-
-    return task
-
-def update():
-    tasks = load_tasks()
-    if not tasks:
-        print("No tasks found.")
-        return
-    task_name = input("Enter the task name you want to update: ").strip().casefold()
-    matches = [
-        task for task in tasks
-        if task["name"].casefold() == task_name
-    ]
-    if not matches:
-        print("No matching task found.")
-        return
-
-    task_to_update = select_matching_task(matches, "update")
-    if task_to_update is None: 
-        return
+        return False
     
-    answer = input("Are you sure to update the task: (Yes/No): ").strip().casefold()
-    if not confirm_task_action(answer):
-        print("Task update cancelled.")
-        return
-    field = input(
-        "Which field do you want to update (name, description, due_date)? "
-    ).strip().casefold()
-    if field not in ("name", "description", "due_date"):
-        print("Invalid field. Choose name, description, or due_date.")
-        return
-    field_label = field.replace("_", " ")
-    current_value = str(task_to_update.get(field, "")).strip().casefold()
-    while True:
-        new_value = input(f"Enter the new {field_label}: ").strip()
-        if new_value == "":
-            print(f"{field_label.capitalize()} cannot be empty. Please enter a valid {field_label}.")
-            continue
-        if new_value.casefold() == current_value:
-            print(
-                f"The {field_label} is the same as before. "
-                f"Please enter a new {field_label}."
-            )
-            continue
-        if field == "due_date":
-            try:
-                new_value = normalize_due_date(new_value)
-            except ValueError:
-                print("Invalid date. Use YYYY/MM/DD (Nepali BS, day 1-32) or YYYY-MM-DD (Gregorian AD).")
-                continue
-        update_task(tasks, task_to_update, field, new_value)
-        break
+    query = f"""
+    UPDATE tasks
+    SET {field} = ?
+    WHERE id = ?
+    """
+    cursor.execute(query,(new_value, task_id))
+    
+    updated = cursor.rowcount
+    connection.commit()
+    connection.close()
+    return updated
 
-    save_tasks(tasks)   
-    print(f"Task {field_label} updated.")
+# def update():
+#     tasks = load_tasks()
+#     if not tasks:
+#         print("No tasks found.")
+#         return
+#     task_name = input("Enter the task name you want to update: ").strip().casefold()
+#     matches = [
+#         task for task in tasks
+#         if task["name"].casefold() == task_name
+#     ]
+#     if not matches:
+#         print("No matching task found.")
+#         return
+
+#     task_to_update = select_matching_task(matches, "update")
+#     if task_to_update is None: 
+#         return
+    
+#     answer = input("Are you sure to update the task: (Yes/No): ").strip().casefold()
+#     if not confirm_task_action(answer):
+#         print("Task update cancelled.")
+#         return
+#     field = input(
+#         "Which field do you want to update (name, description, due_date)? "
+#     ).strip().casefold()
+#     if field not in ("name", "description", "due_date"):
+#         print("Invalid field. Choose name, description, or due_date.")
+#         return
+#     field_label = field.replace("_", " ")
+#     current_value = str(task_to_update.get(field, "")).strip().casefold()
+#     while True:
+#         new_value = input(f"Enter the new {field_label}: ").strip()
+#         if new_value == "":
+#             print(f"{field_label.capitalize()} cannot be empty. Please enter a valid {field_label}.")
+#             continue
+#         if new_value.casefold() == current_value:
+#             print(
+#                 f"The {field_label} is the same as before. "
+#                 f"Please enter a new {field_label}."
+#             )
+#             continue
+#         if field == "due_date":
+#             try:
+#                 new_value = normalize_due_date(new_value)
+#             except ValueError:
+#                 print("Invalid date. Use YYYY/MM/DD (Nepali BS, day 1-32) or YYYY-MM-DD (Gregorian AD).")
+#                 continue
+#         update_task(tasks, task_to_update, field, new_value)
+#         break
+
+#     save_tasks(tasks)   
+#     print(f"Task {field_label} updated.")
 
