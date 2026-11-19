@@ -228,46 +228,42 @@ def view_task_from_assistant():
 #         print(f"Error: Missing key in task data - {e}")
 
 def search_task_from_assistant(name):
-    tasks = load_tasks()
-    
-    if not load_tasks:
-        print("No tasks found.")
-        return
-    name = name.strip().casefold()
-    
-    matches = [
-        task for task in tasks
-        if name in task["name"].casefold() == name
-    ]
+    connection = create_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT name from tasks WHERE name LIKE ?
+    """, (f"%{name}",))
+    matches = cursor.fetchall()
+    connection.close()
     return matches
 
-def search():
-    tasks = load_tasks()
-    if not tasks:
-            print("No tasks found,")
-            return
-    search_name = input("Enter the task name you are searching for: ").strip().casefold()
-    matches = [
-        task for task in tasks
-        if task["name"].casefold() == search_name
-    ]
+# def search():
+#     tasks = load_tasks()
+#     if not tasks:
+#             print("No tasks found,")
+#             return
+#     search_name = input("Enter the task name you are searching for: ").strip().casefold()
+#     matches = [
+#         task for task in tasks
+#         if task["name"].casefold() == search_name
+#     ]
 
-    if not matches:
-        print("No matching task found.")
-        return
+#     if not matches:
+#         print("No matching task found.")
+#         return
 
-    selected_task = select_matching_task(matches, "search")
+#     selected_task = select_matching_task(matches, "search")
     
-    if selected_task is None:
-        return
+#     if selected_task is None:
+#         return
 
-    print(
-        f"Task details:\n"
-        f"ID: {selected_task.get('id', 'not assigned')}\n"
-        f"Name: {selected_task['name']}\n"
-        f"Description: {selected_task['description']}\n"
-        f"Due Date: {selected_task['due_date']}"
-    )
+#     print(
+#         f"Task details:\n"
+#         f"ID: {selected_task.get('id', 'not assigned')}\n"
+#         f"Name: {selected_task['name']}\n"
+#         f"Description: {selected_task['description']}\n"
+#         f"Due Date: {selected_task['due_date']}"
+#     )
 
 def delete_task_from_assistant(task_id):
     tasks = load_tasks()
