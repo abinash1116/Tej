@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 from google.genai import errors
 import json
 import traceback
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 load_dotenv()
 
@@ -41,6 +43,9 @@ def generate_response(prompt, history = None):
     
     
 def analyze_user_prompt(user_input):
+    current_date = datetime.now(
+    ZoneInfo("Asia/Kathmandu")
+).strftime("%Y-%m-%d")
     analysis_prompt = f"""
         You are Tej's Natural Language Task Command Analyzer.
 
@@ -100,6 +105,19 @@ def analyze_user_prompt(user_input):
         - Return null for missing information.
         - Do not invent dates or other information.
         - Return only valid JSON.
+        
+        CURRENT DATE:
+            {current_date}
+
+            DATE EXTRACTION RULES:
+            - Interpret relative dates using the CURRENT DATE above.
+            - "today" means the current date.
+            - "tomorrow" means the next calendar date.
+            - "yesterday" means the previous calendar date.
+            - Convert relative dates into YYYY-MM-DD format.
+            - For dates such as "next Monday", calculate the correct calendar date.
+            - If the user doesn't mention a due date, return null.
+            - Never guess a date.
 
         OUTPUT FORMAT:
 

@@ -16,6 +16,7 @@ def start_assistant():
             break
         
         analysis = analyze_user_prompt(user_input)
+        print("Gemini Analysis:", analysis)
         if analysis is None:
             print("Sorry, I couldn't understant your request. Please try again.")
             continue

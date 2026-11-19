@@ -131,12 +131,9 @@ def add_task_from_assistant(name, description = None, due_date= None):
     
     if due_date is not None:
         due_date = due_date.strip() or None
-
-    # new_task = {
-    #     "name": name,
-    #     "description": description,
-    #     "due_date": due_date
-    # }
+        
+    if due_date is not None:
+        due_date = normalize_due_date(due_date)
     
     connection = create_connection()
     cursor = connection.cursor()
@@ -159,47 +156,6 @@ def add_task_from_assistant(name, description = None, due_date= None):
     connection.close()
     return new_tasks
 
-# def add_task():
-#     while True:
-#         task_name = input("Enter the task name: ").strip()
-#         if task_name:
-#             break
-#         print("Task name cannot be empty, Please enter a valid task name.")
-#     while True:
-#         task_description= input("Enter the task description: ").strip()
-#         if task_description:
-#                 break
-#         print("Task description cannot be empty, Please enter a valid task description.")
-#     while True:
-#         task_due_date = input(
-#             "Enter due date: YYYY/MM/DD for Nepali BS or YYYY-MM-DD for Gregorian AD: "
-#         ).strip()
-#         if not task_due_date:
-#             print("Task due date cannot be empty. Please enter a valid task due date.")
-#             continue
-#         try:
-#             task_due_date = normalize_due_date(task_due_date)
-#         except ValueError:
-#             print("Invalid date. Use YYYY/MM/DD (Nepali BS, day 1-32) or YYYY-MM-DD (Gregorian AD).")
-#             continue
-#         break
-
-#     new_task = {
-#         "name": task_name,
-#         "description": task_description,
-#         "due_date": task_due_date,
-#     }
-
-#     tasks = load_tasks()
-#     assign_task_ids(tasks)
-#     task_id = max((task["id"] for task in tasks), default=0) + 1
-
-#     new_task["id"] = task_id
-#     tasks.append(new_task)
-
-#     save_tasks(tasks)  #write python data to a json file with indentation for readability
-#     print(f"Task added with ID: {task_id}")
-    
 def view_task_from_assistant():
     connection = create_connection()
     cursor = connection.cursor()
@@ -211,21 +167,6 @@ def view_task_from_assistant():
     connection.close()
     return tasks
 
-    
-        
-   
-# def view_task():
-#     tasks = load_tasks()
-
-#     try:
-#         if not tasks:
-#             print("No tasks found")
-            
-#         for task in tasks:
-#             print(f" Task ID: {task.get('id', 'not assigned')}")
-#             print(f"Task name: {task['name']}")
-#     except KeyError as e:
-#         print(f"Error: Missing key in task data - {e}")
 
 def search_task_from_assistant(name):
     connection = create_connection()
@@ -237,33 +178,6 @@ def search_task_from_assistant(name):
     connection.close()
     return matches
 
-# def search():
-#     tasks = load_tasks()
-#     if not tasks:
-#             print("No tasks found,")
-#             return
-#     search_name = input("Enter the task name you are searching for: ").strip().casefold()
-#     matches = [
-#         task for task in tasks
-#         if task["name"].casefold() == search_name
-#     ]
-
-#     if not matches:
-#         print("No matching task found.")
-#         return
-
-#     selected_task = select_matching_task(matches, "search")
-    
-#     if selected_task is None:
-#         return
-
-#     print(
-#         f"Task details:\n"
-#         f"ID: {selected_task.get('id', 'not assigned')}\n"
-#         f"Name: {selected_task['name']}\n"
-#         f"Description: {selected_task['description']}\n"
-#         f"Due Date: {selected_task['due_date']}"
-#     )
 
 def delete_task_from_assistant(task_id):
     connection = create_connection()
@@ -278,50 +192,6 @@ def delete_task_from_assistant(task_id):
     connection.close()
 
     return deleted
-
-# def delete():
-#     tasks = load_tasks()
-#     if not tasks:
-#         print("No tasks found.")
-#         return
-#     task_name = input("Enter the task name you want to delete: ").strip().casefold()
-#     matches = [
-#         task for task in tasks
-#         if task["name"].casefold() == task_name
-#     ]
-#     if not matches:
-#         print("No matching task found.")
-#         return
-
-#     matching_task_count = len(matches)
-#     if matching_task_count > 1:
-#         print(f"{matching_task_count} matching tasks found:")
-#         for task in matches:
-#             print(f"ID: {task.get('id', 'not assigned')} - {task['name']}")
-
-#         task_id = input("Enter the task ID to delete: ").strip()
-#         try:
-#             selected_task_id = int(task_id)
-#         except ValueError:
-#             print("Invalid task ID. Enter a number.")
-#             return
-#         task_to_delete = get_task_by_id(matches, selected_task_id)
-#         if task_to_delete is None:
-#             print("No matching task ID found.")
-#             return
-#     else:
-#         task_to_delete = matches[0]
-
-#     answer = input("Are you sure to delete the task? (Yes/No): ").strip().casefold()
-#     if not confirm_task_action(answer):
-#         print("Task deletion cancelled.")
-#         return
-
-#     if remove_task(tasks, task_to_delete):
-#         save_tasks(tasks)
-#         print(f"Task deleted: ID {task_to_delete.get('id')} - {task_to_delete['name']}")
-#     else:
-#         print("Task not found in the list. Deletion failed.")
 
 def update_task_from_assistant(task_id, field, new_value):
     connection = create_connection()
@@ -341,57 +211,4 @@ def update_task_from_assistant(task_id, field, new_value):
     connection.commit()
     connection.close()
     return updated
-
-# def update():
-#     tasks = load_tasks()
-#     if not tasks:
-#         print("No tasks found.")
-#         return
-#     task_name = input("Enter the task name you want to update: ").strip().casefold()
-#     matches = [
-#         task for task in tasks
-#         if task["name"].casefold() == task_name
-#     ]
-#     if not matches:
-#         print("No matching task found.")
-#         return
-
-#     task_to_update = select_matching_task(matches, "update")
-#     if task_to_update is None: 
-#         return
-    
-#     answer = input("Are you sure to update the task: (Yes/No): ").strip().casefold()
-#     if not confirm_task_action(answer):
-#         print("Task update cancelled.")
-#         return
-#     field = input(
-#         "Which field do you want to update (name, description, due_date)? "
-#     ).strip().casefold()
-#     if field not in ("name", "description", "due_date"):
-#         print("Invalid field. Choose name, description, or due_date.")
-#         return
-#     field_label = field.replace("_", " ")
-#     current_value = str(task_to_update.get(field, "")).strip().casefold()
-#     while True:
-#         new_value = input(f"Enter the new {field_label}: ").strip()
-#         if new_value == "":
-#             print(f"{field_label.capitalize()} cannot be empty. Please enter a valid {field_label}.")
-#             continue
-#         if new_value.casefold() == current_value:
-#             print(
-#                 f"The {field_label} is the same as before. "
-#                 f"Please enter a new {field_label}."
-#             )
-#             continue
-#         if field == "due_date":
-#             try:
-#                 new_value = normalize_due_date(new_value)
-#             except ValueError:
-#                 print("Invalid date. Use YYYY/MM/DD (Nepali BS, day 1-32) or YYYY-MM-DD (Gregorian AD).")
-#                 continue
-#         update_task(tasks, task_to_update, field, new_value)
-#         break
-
-#     save_tasks(tasks)   
-#     print(f"Task {field_label} updated.")
 
