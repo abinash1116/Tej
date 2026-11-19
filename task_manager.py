@@ -266,62 +266,62 @@ def search_task_from_assistant(name):
 #     )
 
 def delete_task_from_assistant(task_id):
-    tasks = load_tasks()
+    connection = create_connection()
+    cursor = connection.cursor()
+    
+    cursor.execute("""
+    DELETE FROM task WHERE task_id = ?,               
+    """, (task_id,))
+    deleted = cursor.rowcount()
+    
+    connection.commit()
+    connection.close()
 
-    task = get_task_by_id(tasks, task_id)
+    return deleted
 
-    if task is None:
-        return None
+# def delete():
+#     tasks = load_tasks()
+#     if not tasks:
+#         print("No tasks found.")
+#         return
+#     task_name = input("Enter the task name you want to delete: ").strip().casefold()
+#     matches = [
+#         task for task in tasks
+#         if task["name"].casefold() == task_name
+#     ]
+#     if not matches:
+#         print("No matching task found.")
+#         return
 
-    if remove_task(tasks, task):
-        save_tasks(tasks)
-        return task
+#     matching_task_count = len(matches)
+#     if matching_task_count > 1:
+#         print(f"{matching_task_count} matching tasks found:")
+#         for task in matches:
+#             print(f"ID: {task.get('id', 'not assigned')} - {task['name']}")
 
-    return None
+#         task_id = input("Enter the task ID to delete: ").strip()
+#         try:
+#             selected_task_id = int(task_id)
+#         except ValueError:
+#             print("Invalid task ID. Enter a number.")
+#             return
+#         task_to_delete = get_task_by_id(matches, selected_task_id)
+#         if task_to_delete is None:
+#             print("No matching task ID found.")
+#             return
+#     else:
+#         task_to_delete = matches[0]
 
-def delete():
-    tasks = load_tasks()
-    if not tasks:
-        print("No tasks found.")
-        return
-    task_name = input("Enter the task name you want to delete: ").strip().casefold()
-    matches = [
-        task for task in tasks
-        if task["name"].casefold() == task_name
-    ]
-    if not matches:
-        print("No matching task found.")
-        return
+#     answer = input("Are you sure to delete the task? (Yes/No): ").strip().casefold()
+#     if not confirm_task_action(answer):
+#         print("Task deletion cancelled.")
+#         return
 
-    matching_task_count = len(matches)
-    if matching_task_count > 1:
-        print(f"{matching_task_count} matching tasks found:")
-        for task in matches:
-            print(f"ID: {task.get('id', 'not assigned')} - {task['name']}")
-
-        task_id = input("Enter the task ID to delete: ").strip()
-        try:
-            selected_task_id = int(task_id)
-        except ValueError:
-            print("Invalid task ID. Enter a number.")
-            return
-        task_to_delete = get_task_by_id(matches, selected_task_id)
-        if task_to_delete is None:
-            print("No matching task ID found.")
-            return
-    else:
-        task_to_delete = matches[0]
-
-    answer = input("Are you sure to delete the task? (Yes/No): ").strip().casefold()
-    if not confirm_task_action(answer):
-        print("Task deletion cancelled.")
-        return
-
-    if remove_task(tasks, task_to_delete):
-        save_tasks(tasks)
-        print(f"Task deleted: ID {task_to_delete.get('id')} - {task_to_delete['name']}")
-    else:
-        print("Task not found in the list. Deletion failed.")
+#     if remove_task(tasks, task_to_delete):
+#         save_tasks(tasks)
+#         print(f"Task deleted: ID {task_to_delete.get('id')} - {task_to_delete['name']}")
+#     else:
+#         print("Task not found in the list. Deletion failed.")
 
 def update_task_from_assistant(task_id, field, new_value):
     tasks = load_tasks()
