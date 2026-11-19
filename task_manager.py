@@ -163,7 +163,7 @@ def view_task_from_assistant():
     cursor.execute("""
         SELECT * FROM tasks             
         """)
-    tasks = cursor.fetchall() 
+    tasks = [dict(task) for task in cursor.fetchall()]
     connection.close()
     return tasks
 
@@ -172,9 +172,9 @@ def search_task_from_assistant(name):
     connection = create_connection()
     cursor = connection.cursor()
     cursor.execute("""
-        SELECT name from tasks WHERE name LIKE ?
-    """, (f"%{name}",))
-    matches = cursor.fetchall()
+        SELECT * from tasks WHERE name LIKE ?
+    """, (f"%{name}%",))
+    matches = [dict(task) for task in cursor.fetchall()]
     connection.close()
     return matches
 
@@ -184,7 +184,7 @@ def delete_task_from_assistant(task_id):
     cursor = connection.cursor()
     
     cursor.execute("""
-    DELETE FROM tasks WHERE task_id = ?,               
+    DELETE FROM tasks WHERE id = ?               
     """, (task_id,))
     deleted = cursor.rowcount
     
@@ -194,11 +194,13 @@ def delete_task_from_assistant(task_id):
     return deleted
 
 def update_task_from_assistant(task_id, field, new_value):
-    connection = create_connection()
-    cursor = connection.cursor()
     allowed_fields = ["name", "description", "due_date"]
     if field not in allowed_fields:
         return False
+    if field == "due_date" and new_value is not None:
+        new_value = normalize_due_date(new_value)
+    connection = create_connection()
+    cursor = connection.cursor()
     
     query = f"""
     UPDATE tasks
