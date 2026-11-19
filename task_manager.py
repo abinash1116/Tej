@@ -1,9 +1,9 @@
 import json
 from pathlib import Path
 from time import strptime
+from database.db_connection import create_connection
 
 TASKS_FILE = Path(__file__).resolve().with_name("tasks.json")
-
 
 def load_tasks():
     try:
@@ -132,86 +132,100 @@ def add_task_from_assistant(name, description = None, due_date= None):
     if due_date is not None:
         due_date = due_date.strip() or None
 
-    new_task = {
-        "name": name,
-        "description": description,
-        "due_date": due_date
+    # new_task = {
+    #     "name": name,
+    #     "description": description,
+    #     "due_date": due_date
+    # }
+    
+    connection = create_connection()
+    cursor = connection.cursor()
+    
+    cursor.execute("""
+              INSERT INTO tasks(name, description, due_date) VALUES(?, ?, ?)
+                             
+        """,
+        (name, description, due_date))
+    
+    task_id = cursor.lastrowid
+    
+    new_tasks = {
+        'id': task_id,
+        'name': name,
+        'description': description,
+        'due_date': due_date
     }
-    
-    tasks = load_tasks()
-    assign_task_ids(tasks)
-    
-    task_id = max((task["id"] for task in tasks), default = 0) +1
-    new_task["id"] = task_id
-    tasks.append(new_task)
-    
-    save_tasks(tasks)
-    
-    return new_task
+    connection.commit()
+    connection.close()
+    return new_tasks
 
-def add_task():
-    while True:
-        task_name = input("Enter the task name: ").strip()
-        if task_name:
-            break
-        print("Task name cannot be empty, Please enter a valid task name.")
-    while True:
-        task_description= input("Enter the task description: ").strip()
-        if task_description:
-                break
-        print("Task description cannot be empty, Please enter a valid task description.")
-    while True:
-        task_due_date = input(
-            "Enter due date: YYYY/MM/DD for Nepali BS or YYYY-MM-DD for Gregorian AD: "
-        ).strip()
-        if not task_due_date:
-            print("Task due date cannot be empty. Please enter a valid task due date.")
-            continue
-        try:
-            task_due_date = normalize_due_date(task_due_date)
-        except ValueError:
-            print("Invalid date. Use YYYY/MM/DD (Nepali BS, day 1-32) or YYYY-MM-DD (Gregorian AD).")
-            continue
-        break
+# def add_task():
+#     while True:
+#         task_name = input("Enter the task name: ").strip()
+#         if task_name:
+#             break
+#         print("Task name cannot be empty, Please enter a valid task name.")
+#     while True:
+#         task_description= input("Enter the task description: ").strip()
+#         if task_description:
+#                 break
+#         print("Task description cannot be empty, Please enter a valid task description.")
+#     while True:
+#         task_due_date = input(
+#             "Enter due date: YYYY/MM/DD for Nepali BS or YYYY-MM-DD for Gregorian AD: "
+#         ).strip()
+#         if not task_due_date:
+#             print("Task due date cannot be empty. Please enter a valid task due date.")
+#             continue
+#         try:
+#             task_due_date = normalize_due_date(task_due_date)
+#         except ValueError:
+#             print("Invalid date. Use YYYY/MM/DD (Nepali BS, day 1-32) or YYYY-MM-DD (Gregorian AD).")
+#             continue
+#         break
 
-    new_task = {
-        "name": task_name,
-        "description": task_description,
-        "due_date": task_due_date,
-    }
+#     new_task = {
+#         "name": task_name,
+#         "description": task_description,
+#         "due_date": task_due_date,
+#     }
 
-    tasks = load_tasks()
-    assign_task_ids(tasks)
-    task_id = max((task["id"] for task in tasks), default=0) + 1
+#     tasks = load_tasks()
+#     assign_task_ids(tasks)
+#     task_id = max((task["id"] for task in tasks), default=0) + 1
 
-    new_task["id"] = task_id
-    tasks.append(new_task)
+#     new_task["id"] = task_id
+#     tasks.append(new_task)
 
-    save_tasks(tasks)  #write python data to a json file with indentation for readability
-    print(f"Task added with ID: {task_id}")
+#     save_tasks(tasks)  #write python data to a json file with indentation for readability
+#     print(f"Task added with ID: {task_id}")
     
 def view_task_from_assistant():
-    tasks = load_tasks()
-    if not tasks:
-        print("No tasks found.")
-        return
-    else:
-        return tasks
+    connection = create_connection()
+    cursor = connection.cursor()
+    
+    cursor.execute("""
+        SELECT * FROM tasks             
+        """)
+    tasks = cursor.fetchall() 
+    connection.close()
+    return tasks
+
     
         
    
-def view_task():
-    tasks = load_tasks()
+# def view_task():
+#     tasks = load_tasks()
 
-    try:
-        if not tasks:
-            print("No tasks found")
+#     try:
+#         if not tasks:
+#             print("No tasks found")
             
-        for task in tasks:
-            print(f" Task ID: {task.get('id', 'not assigned')}")
-            print(f"Task name: {task['name']}")
-    except KeyError as e:
-        print(f"Error: Missing key in task data - {e}")
+#         for task in tasks:
+#             print(f" Task ID: {task.get('id', 'not assigned')}")
+#             print(f"Task name: {task['name']}")
+#     except KeyError as e:
+#         print(f"Error: Missing key in task data - {e}")
 
 def search_task_from_assistant(name):
     tasks = load_tasks()
