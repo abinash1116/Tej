@@ -23,3 +23,15 @@ env.text
 .venv-tej/  
 
 .gitignore
+
+.venv-tej
+backup
+database
+.gitignore
+hello_test.py
+tasks_backup.json
+test_db.py
+test_gemini_client.py
+test_intent.py
+test_output.txt
+test_task_manager.py
