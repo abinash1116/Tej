@@ -1,18 +1,20 @@
-from database.db_connection import create_task_table, create_connection
 
-create_task_table()
+import sqlite3
+import unittest
+from database.db_connection import create_connection
 
-connection = create_connection()
-cursor = connection.cursor()
 
-cursor.execute("""
-    SELECT name FROM sqlite_master
-    WHERE type = 'table'
-""")
+class TestDatabase(unittest.TestCase): #unittest.TestCase gives us the structure for writing automated tests
 
-tables = cursor.fetchall()
+    def test_create_connection(self):
+        connection = create_connection()
+        self.assertIsInstance(connection, sqlite3.Connection)
+        connection.close()
 
-for table in tables:
-    print(table["name"])
+    def test_row_factory(self):
+        connection = create_connection()
+        self.assertIs(connection.row_factory, sqlite3.Row)
+        connection.close()
 
-connection.close()
+if __name__ == "__main__":
+    unittest.main()
