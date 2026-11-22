@@ -1,9 +1,6 @@
-import json
-from pathlib import Path
 from time import strptime
 from database.db_connection import create_connection
 
-TASKS_FILE = Path(__file__).resolve().with_name("tasks.json")
 
 def load_tasks():
     try:
