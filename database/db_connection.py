@@ -20,6 +20,18 @@ def create_task_table():
                        due_date TEXT
                    )
             """)
+    cursor.execute("PRAGMA table_info(tasks)")
+    columns = [column["name"] for column in cursor.fetchall()]
+    
+    if "status" not in columns:
+        cursor.execute("""
+            ALTER TABLE tasks
+            ADD COLUMN status TEXT NOT NULL DEFAULT "Pending"           
+            """)
+    
     connection.commit()
     connection.close()
     
+if __name__ == "__main__":
+    create_task_table()
+    print("Database initialized!")
