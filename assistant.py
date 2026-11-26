@@ -69,6 +69,37 @@ def select_task(matches, action):
     print("Invalid selection.")
     return None
 
+def validate_analysis(analysis):
+    """
+    Validate the structure of Gemini's analysis response.
+    """
+    
+    supported_intents = {
+        "add_tasks",
+        "view_tasks",
+        "search_tasks",
+        "update_tasks",
+        "delete_tasks",
+        "complete_tasks",
+        "unknown"
+    }
+    
+    if not isinstance(analysis, dict):
+        print("Invalid analysis response.")
+        return None
+    
+    intent = analysis.get("intent")
+    entities = analysis.get("entities")
+    
+    if not isinstance(intent, str) or intent not in supported_intents:
+        print("Unsupported intent.")
+        return None
+    
+    if not isinstance(entities, dict):
+        print("Invalid entities structure.")
+        return None
+    
+    return intent, entities
 
 def start_assistant():
     print("Welcome to Tej AI Assistant!..")
@@ -91,12 +122,13 @@ def start_assistant():
         analysis = analyze_user_prompt(user_input)
         print("Gemini Analysis:", analysis)
 
-        if analysis is None:
-            print("Sorry, I couldn't understand your request. Please try again.")
+        validated = validate_analysis(analysis)
+        
+        if validated is None:
+            print("Sorry, I couldn't undertsant your request. Please try again.")
             continue
-
-        intent = analysis.get("intent", "unknown")
-        entities = analysis.get("entities") or {}
+        
+        intent, entities = validated
 
         if intent == "unknown":
             response = generate_response(user_input, history)

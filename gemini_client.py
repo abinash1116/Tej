@@ -102,16 +102,22 @@ def analyze_user_prompt(user_input):
         For view_tasks:
         - Extract status if the user requests a specific status.
         - Valid status filters are Pending, Completed, and Overdue.
+        - If the user requests overdue tasks, return "Overdue".
+        - Never interpret viewing completed tasks as a command to complete tasks.
         - If the user requests all tasks, status must be null.
         - Do not confuse status filtering with task completion.
         
         For complete_task:
         - Extract task_id if explicitly provided.
         - Otherwise, extract the task name if provided.
+        - Extract either task_id or name, not both,
+        unless the user explicitly provides both.
         - Do not extract unrelated task details.
         - Do not invent task identifiers or names.
         - Do not allow the user to set arbitrary status values.
         - The task must be identified before it can be completed.
+        - Do not extract status from the user's message.
+        - The Python application will handle the status update.
 
         IMPORTANT RULES:
         - Understand different natural-language expressions.
