@@ -68,9 +68,13 @@ def analyze_user_prompt(user_input):
 
         5. delete_task:
         The user wants to delete an existing task.
+        
+        6. complete_task:
+        The user wants to mark an existing task as completed.
 
-        6. unknown:
+        7. unknown:
         The request does not match any supported intent.
+        
 
         ENTITY EXTRACTION RULES:
 
@@ -96,7 +100,18 @@ def analyze_user_prompt(user_input):
         - Do not guess task identifiers.
 
         For view_tasks:
-        - No entities are required.
+        - Extract status if the user requests a specific status.
+        - Valid status filters are Pending, Completed, and Overdue.
+        - If the user requests all tasks, status must be null.
+        - Do not confuse status filtering with task completion.
+        
+        For complete_task:
+        - Extract task_id if explicitly provided.
+        - Otherwise, extract the task name if provided.
+        - Do not extract unrelated task details.
+        - Do not invent task identifiers or names.
+        - Do not allow the user to set arbitrary status values.
+        - The task must be identified before it can be completed.
 
         IMPORTANT RULES:
         - Understand different natural-language expressions.
@@ -129,7 +144,8 @@ def analyze_user_prompt(user_input):
                 "description": null,
                 "due_date": null,
                 "field": null,
-                "new_value": null
+                "new_value": null,
+                "status": null
             }}
         }}
 
